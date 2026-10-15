@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Slicer & Batch Renamer</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1>Audio Slicer & Batch Renamer</h1>
+                    <p class="subtitle">Auto 30-min duration check, 29-min slice chunking & sequence renaming</p>
+                </div>
+            </div>
+            <div class="status-badge" id="systemStatusBadge">
+                <span class="pulse-dot"></span> System Ready
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Path Config Section -->
+            <section class="card path-card">
+                <div class="input-group-grid">
+                    <div class="input-field">
+                        <label for="folderPath">Source Folder Path</label>
+                        <div class="input-wrapper">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <input type="text" id="folderPath" placeholder="e.g. C:\Users\Anant\Podcasts or D:\AudioFiles" />
+                            <button id="scanBtn" class="btn btn-primary">
+                                <span>Analyze Folder</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="input-field">
+                        <label for="outputFolder">Output Directory (Optional)</label>
+                        <div class="input-wrapper">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            <input type="text" id="outputFolder" placeholder="Default: [Source Folder]\Processed_Audios" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Stats Bar -->
+            <section class="stats-grid" id="statsGrid" style="display: none;">
+                <div class="stat-card">
+                    <span class="stat-label">Total Audios Found</span>
+                    <span class="stat-value" id="statTotalAudios">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Audios > 30 mins</span>
+                    <span class="stat-value warning" id="statAudiosToSplit">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">Total Target Output Chunks</span>
+                    <span class="stat-value highlight" id="statTotalChunks">0</span>
+                </div>
+                <div class="stat-card action-card">
+                    <button id="processBtn" class="btn btn-accent btn-large">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <span>Start Batch Processing</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Live Progress Bar Section -->
+            <section class="card progress-card" id="progressCard" style="display: none;">
+                <div class="progress-header">
+                    <span id="progressTitle">Processing batch audio files...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </section>
+
+            <!-- Analysis & Preview Table -->
+            <section class="card table-card" id="tableCard" style="display: none;">
+                <div class="table-header">
+                    <h3>Folder Analysis & Slicing Preview</h3>
+                    <span class="table-subtitle">Review planned video sequence, part split, and target filenames</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Vid Seq</th>
+                                <th>Part</th>
+                                <th>Original Audio File</th>
+                                <th>Duration</th>
+                                <th>Split Status</th>
+                                <th>New Output Filename</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Console Log -->
+            <section class="card log-card" id="logCard" style="display: none;">
+                <div class="log-header">
+                    <span>Processing Console</span>
+                    <button id="clearLogsBtn" class="btn-text">Clear</button>
+                </div>
+                <div class="log-terminal" id="logTerminal">
+                    <div class="log-line info">Console ready. Click "Analyze Folder" to begin.</div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

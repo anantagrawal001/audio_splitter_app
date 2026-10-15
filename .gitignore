@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+venv/
+.venv/
+test_samples/Processed_Audios/
+*.log
+.DS_Store
+Thumbs.db
